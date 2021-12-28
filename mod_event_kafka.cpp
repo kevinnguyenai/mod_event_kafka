@@ -87,7 +87,7 @@ namespace mod_event_kafka {
                 switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, errstr);
             }
 
-            if (rd_kafka_conf_set(conf, "compression.codec", "zstd", errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
+            if (rd_kafka_conf_set(conf, "compression.codec", "lz4", errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
                 switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, errstr);
             }
             // Development purpose only
