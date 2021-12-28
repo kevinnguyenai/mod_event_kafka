@@ -90,9 +90,12 @@ namespace mod_event_kafka {
             if (rd_kafka_conf_set(conf, "compression.codec", "gzip", errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
                 switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, errstr);
             }
+            // Development purpose only
+            /*
             if (rd_kafka_conf_set(conf, "debug", "all", errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
                 switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, errstr);
             }
+            */
 
             rd_kafka_conf_set_dr_msg_cb(conf, dr_msg_cb);
 
@@ -126,8 +129,8 @@ namespace mod_event_kafka {
                 if (resp == -1){
                     switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, "Failed to produce, with error %s \n", rd_kafka_err2str(rd_kafka_last_error()));
                 } else {
-                    size_t len = strlen(event_json);
-                    switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_DEBUG,"Produced message (%zu bytes)", len);
+                    // size_t len = strlen(event_json);
+                    // switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_DEBUG,"Produced message (%zu bytes)", len);
                 }
                 rd_kafka_poll(producer, 0);
             } else {
@@ -155,8 +158,8 @@ namespace mod_event_kafka {
                 switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, " Message delivery failed %s \n",rd_kafka_err2str(rkmessage->err));
             }
             else {
-                switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_DEBUG,  "Message delivered (%zd bytes, partition %d, offset  %" PRId64 ") \n",rkmessage->len, rkmessage->partition, rkmessage->offset);
-                rd_kafka_message_destroy ((rd_kafka_message_t *)rkmessage);
+                // switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_DEBUG,  "Message delivered (%zd bytes, partition %d, offset  %" PRId64 ") \n",rkmessage->len, rkmessage->partition, rkmessage->offset);
+                // rd_kafka_message_destroy ((rd_kafka_message_t *)rkmessage);
             }
         }
 
