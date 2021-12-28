@@ -46,5 +46,13 @@ sudo apt-get install librdkafka-dev libz-dev libssl-dev
 make
 make install
 ```
-
-
+### vscode dev
+check include lib c c++
+```
+clang -Wp,-v -E -xc -x c++ /dev/null
+```
+reset xcode-select to reset path
+https://stackoverflow.com/questions/35009531/xcrun-error-active-developer-path-applications-xcode-app-contents-developer
+```
+sudo xcode-select --reset
+```
