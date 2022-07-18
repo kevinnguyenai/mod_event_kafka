@@ -2,7 +2,9 @@
 	<settings>
 		<param name="bootstrap-servers" value="localhost:9092"/>
 		<param name="topic-prefix" value="topic_name"/>
+		<param name="topic-index" value="0"/>
 		<param name="topic-dyn" value="true"/>
 		<param name="buffer-size" value="16" /> 
+		<param name="compress-type" value="lz4" />
 	</settings>
  </configuration>

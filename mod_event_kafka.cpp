@@ -45,10 +45,14 @@ namespace mod_event_kafka {
                             "localhost:9092", NULL, "bootstrap-servers", "Kafka Bootstrap Brokers"),
         SWITCH_CONFIG_ITEM("topic-prefix", SWITCH_CONFIG_STRING, CONFIG_RELOADABLE, &globals.topic_prefix,
                             "fs", NULL, "topic-prefix", "Kafka Topic Prefix"),
+        SWITCH_CONFIG_ITEM("topic-index", SWITCH_CONFIG_INT, CONFIG_RELOADABLE, &globals.topic_index,
+                            0, NULL, "topic-index", "Kafka Topic Index"),
         SWITCH_CONFIG_ITEM("topic-dyn", SWITCH_CONFIG_BOOL, CONFIG_RELOADABLE, &globals.topic_dyn,
-                            true, NULL, "topic-dyn", "Kafka Topic Prefix enable or disable"),                    
+                            false, NULL, "topic-dyn", "Kafka Topic Prefix enable or disable"),                    
         SWITCH_CONFIG_ITEM("buffer-size", SWITCH_CONFIG_INT, CONFIG_RELOADABLE, &globals.buffer_size,
                             10, NULL, "buffer-size", "queue.buffering.max.messages"),
+        SWITCH_CONFIG_ITEM("compress-type", SWITCH_CONFIG_STRING, CONFIG_RELOADABLE, &globals.compress_type,
+                            "gzip", NULL, "compress-type", "compression.codec"),
         SWITCH_CONFIG_ITEM_END()
     };
 
@@ -59,7 +63,7 @@ namespace mod_event_kafka {
             switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_CRIT, "Could not open event_kafka.conf\n");
             return SWITCH_STATUS_FALSE;
         } else {
-            switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_INFO, "event_kafka.conf loaded [brokers: %s, prefix: %s, dyn: %d, buffer-size: %d]", globals.brokers, globals.topic_prefix, globals.topic_dyn, globals.buffer_size);
+            switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_INFO, "event_kafka.conf loaded [brokers: %s, prefix: %s, index: %s, dyn: %d, buffer-size: %d, compress-type: %s]", globals.brokers, globals.topic_prefix, globals.topic_index, globals.topic_dyn, globals.buffer_size, globals.compress_type);
         }
         return SWITCH_STATUS_SUCCESS;
     }
@@ -88,8 +92,8 @@ namespace mod_event_kafka {
             if (rd_kafka_conf_set(conf, "max.in.flight", "1000", errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
                 switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, errstr);
             }
-
-            if (rd_kafka_conf_set(conf, "compression.codec", "gzip", errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
+            // compress type is lz4, gzip , snappy by choice option compress_type
+            if (rd_kafka_conf_set(conf, "compression.codec", globals.compress_type, errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
                 switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, errstr);
             }
             // Development purpose only
@@ -106,7 +110,7 @@ namespace mod_event_kafka {
                 switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, "Failed to create new producer: %s \n", errstr);
             }
             // random topic name setting by topic_dyn settings
-            std::string topic_str = std::string(globals.topic_prefix);
+            std::string topic_str = std::string(globals.topic_prefix) + std::to_string(globals.topic_index).c_str();
             if (globals.topic_dyn) {
                 topic_str = std::string(globals.topic_prefix) + "_" + std::string(switch_core_get_switchname());
             }
