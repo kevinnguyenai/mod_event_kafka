@@ -63,7 +63,7 @@ namespace mod_event_kafka {
             switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_CRIT, "Could not open event_kafka.conf\n");
             return SWITCH_STATUS_FALSE;
         } else {
-            switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_INFO, "event_kafka.conf loaded [brokers: %s, prefix: %s, index: %s, dyn: %d, buffer-size: %d, compress-type: %s]", globals.brokers, globals.topic_prefix, globals.topic_index, globals.topic_dyn, globals.buffer_size, globals.compress_type);
+            switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_INFO, "event_kafka.conf loaded [brokers: %s, prefix: %s, index: %d, dyn: %d, buffer-size: %d, compress-type: %s]", globals.brokers, globals.topic_prefix, globals.topic_index, globals.topic_dyn, globals.buffer_size, globals.compress_type);
         }
         return SWITCH_STATUS_SUCCESS;
     }
