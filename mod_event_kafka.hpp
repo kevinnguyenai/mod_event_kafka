@@ -11,7 +11,7 @@ namespace mod_event_kafka {
 		char *brokers;
 		char *topic_prefix;
 		int topic_index;
-		bool *topic_dyn;
+		int *topic_dyn;
 		int buffer_size;
 		char *compress_type;
 	} globals;
