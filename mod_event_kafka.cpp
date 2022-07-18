@@ -45,6 +45,8 @@ namespace mod_event_kafka {
                             "localhost:9092", NULL, "bootstrap-servers", "Kafka Bootstrap Brokers"),
         SWITCH_CONFIG_ITEM("topic-prefix", SWITCH_CONFIG_STRING, CONFIG_RELOADABLE, &globals.topic_prefix,
                             "fs", NULL, "topic-prefix", "Kafka Topic Prefix"),
+        SWITCH_CONFIG_ITEM("topic-dyn", SWITCH_CONFIG_BOOL, CONFIG_RELOADABLE, &globals.topic_dyn,
+                            true, NULL, "topic-dyn", "Kafka Topic Prefix enable or disable"),                    
         SWITCH_CONFIG_ITEM("buffer-size", SWITCH_CONFIG_INT, CONFIG_RELOADABLE, &globals.buffer_size,
                             10, NULL, "buffer-size", "queue.buffering.max.messages"),
         SWITCH_CONFIG_ITEM_END()
@@ -57,7 +59,7 @@ namespace mod_event_kafka {
             switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_CRIT, "Could not open event_kafka.conf\n");
             return SWITCH_STATUS_FALSE;
         } else {
-            switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_INFO, "event_kafka.conf loaded [brokers: %s, prefix: %s, buffer-size: %d]", globals.brokers, globals.topic_prefix, globals.buffer_size);
+            switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_INFO, "event_kafka.conf loaded [brokers: %s, prefix: %s, dyn: %d, buffer-size: %d]", globals.brokers, globals.topic_prefix, globals.topic_dyn, globals.buffer_size);
         }
         return SWITCH_STATUS_SUCCESS;
     }
@@ -103,8 +105,11 @@ namespace mod_event_kafka {
             if (!producer) {
                 switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, "Failed to create new producer: %s \n", errstr);
             }
-
-            std::string topic_str = std::string(globals.topic_prefix) + "_" + std::string(switch_core_get_switchname());
+            // random topic name setting by topic_dyn settings
+            std::string topic_str = std::string(globals.topic_prefix);
+            if (globals.topic_dyn) {
+                topic_str = std::string(globals.topic_prefix) + "_" + std::string(switch_core_get_switchname());
+            }
             switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_INFO, "KafkaEventPublisher Topic : %s \n", topic_str.c_str());
 
             rd_kafka_topic_conf_t *tconf = rd_kafka_topic_conf_new();
